@@ -39,3 +39,32 @@ class CustomHumidityPredictor(BaseEstimator, RegressorMixin):
     def predict(self, input_data):
         # uses the trained model weights to make a semi accurate prediction
         return np.dot(input_data, self.feature_weights) + self.bias_term
+
+class CustomTemperaturePredictor(BaseEstimator, RegressorMixin):
+    def __init__(self, learning_rate=1e-4, n_iterations=10000):
+        self.learning_rate = learning_rate
+        self.n_iterations = n_iterations
+        self.feature_weights = None
+        self.bias_term = None
+
+    def fit(self, input_data, actual_temperature):
+        num_rows, num_features = input_data.shape
+        self.feature_weights = np.random.randn(num_features) * 0.01
+        self.bias_term = 0
+
+        for _ in range(self.n_iterations):
+            predicted_temperature = np.dot(input_data, self.feature_weights) + self.bias_term
+            prediction_errors = predicted_temperature - actual_temperature
+            gradient_weights = (2 / num_rows) * np.dot(input_data.T, prediction_errors)
+            gradient_bias = (2 / num_rows) * np.sum(prediction_errors)
+
+            self.feature_weights -= self.learning_rate * gradient_weights
+            self.bias_term -= self.learning_rate * gradient_bias
+
+        return self
+
+    def predict(self, input_data):
+        return np.dot(input_data, self.feature_weights) + self.bias_term
+
+
+
