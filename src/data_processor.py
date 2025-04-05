@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import json
 
 class DataProcessor:
     def __init__(self, file_path):
@@ -7,18 +8,37 @@ class DataProcessor:
         self.data = None
 
     def load_data(self):
-        self.data = pd.read_json(self.file_path, lines=True)
-        return self.data
+        try:
+            with open(self.file_path, 'r') as f:
+                raw_json = json.load(f)
+                self.data = pd.DataFrame(raw_json.get("days", []))
+            return self.data
+        except (ValueError, FileNotFoundError) as e:
+            print(f"Error loading JSON file: {e}")
+            return None
 
     def clean_data(self):
-        self.data.replace("", np.nan, inplace=True)
+        if self.data is None:
+            print("Data hasn't been loaded in.")
+            return None
 
-        #checks if ALL data within any columns have no data or are zero & deletes them
-        self.data = self.data.loc[:, ~self.data.isin([0, np.nan]).all()]
+        # changes datetime to separate day month and year
+        if "datetime" in self.data.columns:
+            self.data["datetime"] = pd.to_datetime(self.data["datetime"], errors='coerce')
+            self.data["YEAR"] = self.data["datetime"].dt.year
+            self.data["MONTH"] = self.data["datetime"].dt.month
+            self.data["DAY"] = self.data["datetime"].dt.day
+            self.data.drop(columns=["datetime"], inplace=True)
 
-        #splits "DATE" into separate "YEAR" and "MONTH" to make it easier to search
-        if "DATE" in self.data:
-            self.data["YEAR"] = pd.to_datetime(self.data["DATE"], format='%Y-%m').dt.year
-            self.data["MONTH"] = pd.to_datetime(self.data["DATE"], format='%Y-%m').dt.month
+        # only the columns that make sense with what we need
+        desired_columns = ["DAY", "MONTH", "YEAR", "temp", "dew", "humidity", "precip", "windspeed"]
+
+        existing_columns = [col for col in desired_columns if col in self.data.columns]
+        self.data = self.data[existing_columns]
+
+        # getting rid of any rows that may contain null values (incase)
+        self.data = self.data.dropna(subset=existing_columns)
 
         return self.data
+
+
