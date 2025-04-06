@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.base import BaseEstimator, RegressorMixin
+from collections import defaultdict
 
 class CustomHumidityPredictor(BaseEstimator, RegressorMixin):
     def __init__(self, learning_rate=1e-4, n_iterations=10000):
@@ -65,6 +66,37 @@ class CustomTemperaturePredictor(BaseEstimator, RegressorMixin):
 
     def predict(self, input_data):
         return np.dot(input_data, self.feature_weights) + self.bias_term
+
+def Clustering(data_points, num_clusters=3, max_iterations=100):
+    # picks random starting points for the clusters
+    starting_indices = np.random.choice(len(data_points), num_clusters, replace=False)
+    cluster_centers = data_points[starting_indices]
+
+    for _ in range(max_iterations):
+        clusters_dict = defaultdict(list)
+
+        # goes through and assigns point to nearest cluster center based on avg temp
+        for point_index, current_point in enumerate(data_points):
+            distances_to_centers = [np.linalg.norm(current_point - center) for center in cluster_centers]
+            nearest_center_index = np.argmin(distances_to_centers)
+            clusters_dict[nearest_center_index].append(point_index)
+
+        # updates cluster centers based on new data
+        new_cluster_centers = []
+        for cluster_points in clusters_dict.values():
+            average_point = np.mean(data_points[cluster_points], axis=0)
+            new_cluster_centers.append(average_point)
+
+        new_cluster_centers = np.array(new_cluster_centers)
+
+        # stop once through all data and centers arent changing
+        if np.allclose(cluster_centers, new_cluster_centers):
+            break
+
+        cluster_centers = new_cluster_centers
+
+    return clusters_dict, cluster_centers
+
 
 
 

@@ -41,4 +41,12 @@ class DataProcessor:
 
         return self.data
 
-
+    @staticmethod
+    def load_and_clean_with_city(file_path, city_name):
+        processor = DataProcessor(file_path)
+        data = processor.load_data()
+        if data is not None:
+            cleaned = processor.clean_data()
+            cleaned["city"] = city_name
+            return cleaned
+        return None

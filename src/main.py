@@ -1,11 +1,11 @@
 from data_processor import DataProcessor
-from algorithms import CustomHumidityPredictor, CustomTemperaturePredictor
+from algorithms import CustomHumidityPredictor, CustomTemperaturePredictor, Clustering
 import pandas as pd
 import numpy as np
 from time import *
 
 def cleanData():
-    file_path = "data/climate_data.json"
+    file_path = "data/tallahassee_data.json"
 
     #loads in the data from data_processor.py file
     dp = DataProcessor(file_path)
@@ -142,22 +142,62 @@ def predict_temperature():
         print(f"Month {i}: {temp:.2f}°F")
 
 
+def cluster_temperatures():
+    city_files = {
+        "Tallahassee": "data/tallahassee_data.json",
+        "New York City": "data/nyc_data.json",
+        "Chicago": "data/chicago_data.json"
+    }
+
+    # puts all the data for each city into one table
+    all_city_data = []
+    for city_name, file_path in city_files.items():
+        city_data = DataProcessor.load_and_clean_with_city(file_path, city_name)
+        if city_data is not None:
+            all_city_data.append(city_data)
+
+    full_table = pd.concat(all_city_data)
+
+    # getting average temperatures for each month
+    monthly_averages = full_table.groupby(["city", "YEAR", "MONTH"]).agg({
+        "temp": "mean"
+    }).reset_index()
+
+    # runs cluster function based on the avg temp values
+    temperature_values = monthly_averages[["temp"]].values
+    cluster_groups, cluster_centers = Clustering(temperature_values, num_clusters=3)
+
+    # prints results
+    print("\nGrouped Months by Temperature:\n")
+    for group_number, month_indices in cluster_groups.items():
+        center_temp = cluster_centers[group_number][0]
+        print(f"Group {group_number + 1} (Average Temp: {center_temp:.2f}°F):")
+        for i in month_indices:
+            row = monthly_averages.iloc[i]
+            print(f"  {row['city']} - {int(row['MONTH'])}/{int(row['YEAR'])} (Avg Temp: {row['temp']:.2f}°F)")
+        print()
 
 
 def show_menu():
     print("\nClimate Analyzer\n"
           "----------------\n"
-          "1) Predict Humidity\n"
-          "2) Predict Average Monthly Temperature")
+          "1) Predict Humidity in Tallahassee, Fl\n"
+          "2) Predict Average Monthly Temperature in Tallahassee, Fl\n"
+          "3) Cluster Monthly Temperatures from Tallahasssee, Chicago & NYC\n"
+          "exit To exit program")
+
 if __name__ == "__main__":
     running = True
     while running:
         show_menu()
-        selection = input(">")
-        if selection == "1": predict_humidity()
+        selection = input("> ")
+        if selection == "1":
+            predict_humidity()
         elif selection == "2":
             predict_temperature()
-        elif selection == "exit":
+        elif selection == "3":
+            cluster_temperatures()
+        elif selection == "exit" or selection == "EXIT":
             print("Goodbye...")
             running = False
         else:
