@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from sklearn.base import BaseEstimator, RegressorMixin
 from collections import defaultdict
 
@@ -97,6 +98,22 @@ def Clustering(data_points, num_clusters=3, max_iterations=100):
 
     return clusters_dict, cluster_centers
 
+def detect_anomalies(df, temp_column="temp", temp_diff_threshold=15):
+    # creates DATE and finds all with each MONTH_NUM
+    df["DATE"] = pd.to_datetime(df[["YEAR", "MONTH", "DAY"]])
+    df["MONTH_NUM"] = df["DATE"].dt.month
 
+    # finds average of all dates within that month along dataset
+    month_averages = df.groupby("MONTH_NUM")[temp_column].mean().to_dict()
 
+    anomalies = []
+    for _, row in df.iterrows():
+        month = row["MONTH_NUM"]
+        temp = row[temp_column]
+        avg = month_averages[month]
+        diff = temp - avg
 
+        if abs(diff) >= temp_diff_threshold:
+            anomalies.append((row["DATE"].strftime("%Y-%m-%d"), temp, diff, avg))
+
+    return anomalies

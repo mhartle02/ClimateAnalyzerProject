@@ -1,5 +1,5 @@
 from data_processor import DataProcessor
-from algorithms import CustomHumidityPredictor, CustomTemperaturePredictor, Clustering
+from algorithms import CustomHumidityPredictor, CustomTemperaturePredictor, Clustering, detect_anomalies
 import pandas as pd
 import numpy as np
 from time import *
@@ -177,6 +177,27 @@ def cluster_temperatures():
             print(f"  {row['city']} - {int(row['MONTH'])}/{int(row['YEAR'])} (Avg Temp: {row['temp']:.2f}°F)")
         print()
 
+def detect_daily_anomalies():
+    cleaned_data = cleanData()
+    if cleaned_data is None:
+        print("No data found.")
+        return
+
+    # passes cleaned data into anomaly function from algorithms.py
+    anomalies = detect_anomalies(cleaned_data)
+
+    # takes anomalies and prints them all out
+    if anomalies:
+        print("\nTallahassee Daily Temperature Anomalies:\n")
+        for date, temp, diff, month_avg in anomalies:
+            if diff > 0:
+                direction = "hotter"
+            else:
+                direction = "colder"
+            print(f"{date} → {temp:.2f}°F ({abs(diff):.2f}°F {direction} than monthly average of {month_avg:.2f}°F)")
+    else:
+        print("\nNo anomalies detected.")
+
 
 def show_menu():
     print("\nClimate Analyzer\n"
@@ -184,6 +205,7 @@ def show_menu():
           "1) Predict Humidity in Tallahassee, Fl\n"
           "2) Predict Average Monthly Temperature in Tallahassee, Fl\n"
           "3) Cluster Monthly Temperatures from Tallahasssee, Chicago & NYC\n"
+          "4) Detect Temperature Anomalies in Tallahassee\n"
           "exit To exit program")
 
 if __name__ == "__main__":
@@ -197,6 +219,8 @@ if __name__ == "__main__":
             predict_temperature()
         elif selection == "3":
             cluster_temperatures()
+        elif selection == "4":
+            detect_daily_anomalies()
         elif selection == "exit" or selection == "EXIT":
             print("Goodbye...")
             running = False
