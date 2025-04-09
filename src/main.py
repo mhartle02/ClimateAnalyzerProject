@@ -1,4 +1,5 @@
 from data_processor import DataProcessor
+from visualizer import Visualizer
 from algorithms import CustomHumidityPredictor, CustomTemperaturePredictor, Clustering, detect_anomalies
 import pandas as pd
 import numpy as np
@@ -176,6 +177,24 @@ def cluster_temperatures():
             row = monthly_averages.iloc[i]
             print(f"  {row['city']} - {int(row['MONTH'])}/{int(row['YEAR'])} (Avg Temp: {row['temp']:.2f}°F)")
         print()
+
+    #creates empty lists so data can be appended to send to graph
+    labels = []
+    temps = []
+    descriptions = []
+
+    # fills lists from data
+    for group_id, indices in cluster_groups.items():
+        for i in indices:
+            row = monthly_averages.iloc[i]
+            labels.append(group_id)
+            temps.append(row["temp"])
+            descriptions.append(f"{row['city']} - {int(row['MONTH'])}/{int(row['YEAR'])}")
+
+    # sends to graph from visualizer.py
+    Visualizer.plot_clustered_data(temps, labels, descriptions, cluster_centers)
+
+
 
 def detect_daily_anomalies():
     cleaned_data = cleanData()
