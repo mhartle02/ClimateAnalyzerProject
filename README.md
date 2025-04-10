@@ -17,11 +17,11 @@ In your projects root directory
 # USAGE
 After the project is ran, the user will be prompted with six options:
 ## Predict Humidity in Tallahassee, Fl
-   If this option is selected, the program trains our machine learning model and the user will be asked to provide the following values:
-      - Air temperature
-      - Dew point
-      - Precipitation (inches)
-      - Windspeed
+   If this option is selected, the program trains our machine learning model and the user will be asked to provide the following values: <br/>
+      - Air temperature <br/>
+      - Dew point <br/>
+      - Precipitation (inches) <br/>
+      - Windspeed <br/>
     With these values our algorithm calculates and outputs the predicted humidity percentage.
 
 ## Predict Average Monthly Temperature in Tallahassee, Fl
