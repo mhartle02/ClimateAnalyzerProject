@@ -26,7 +26,6 @@ def cleanData():
         print("Data not loaded")
 
 def predict_humidity():
-
         cleaned_data = cleanData()
         # X = columns we want to look at to see how it effects Y
         X = cleaned_data[["temp", "dew", "precip", "windspeed"]].values
@@ -207,6 +206,7 @@ def detect_daily_anomalies():
 
     # takes anomalies and prints them all out
     if anomalies:
+        Visualizer.plot_anomaly_bars(anomalies)
         print("\nTallahassee Daily Temperature Anomalies:\n")
         for date, temp, diff, month_avg in anomalies:
             if diff > 0:
@@ -217,6 +217,48 @@ def detect_daily_anomalies():
     else:
         print("\nNo anomalies detected.")
 
+def humidity_graph():
+    cleaned_data = cleanData()
+    X = cleaned_data[["temp", "dew", "precip", "windspeed"]].values
+    y = cleaned_data["humidity"].values
+
+    # makes sure all data is valid
+    valid_indices = ~np.isnan(X).any(axis=1) & ~np.isnan(y)
+    X = X[valid_indices]
+    y = y[valid_indices]
+    cleaned_data = cleaned_data[valid_indices]
+
+    # creates DATE column to use for the x-axis
+    cleaned_data["DATE"] = pd.to_datetime(cleaned_data[["YEAR", "MONTH", "DAY"]])
+
+    # trains model (same as humidity predictor function)
+    model = CustomHumidityPredictor(learning_rate=1e-4, n_iterations=10000)
+    model.fit(X, y)
+    print("\nFinished training model")
+    # gets predictions
+    predicted = model.predict(X)
+
+    # asks user what month they want to see predictions vs actual graph
+    try:
+        selected_month = int(input("Enter a month number (1-12) to visualize humidity: "))
+        if not 1 <= selected_month <= 12:
+            raise ValueError("Invalid month.")
+    except ValueError:
+        print("Invalid input. Please enter a number between 1 and 12.")
+        return
+
+    # gets selected month
+    month_mask = cleaned_data["MONTH"] == selected_month
+    actual = y[month_mask]
+    predicted_for_month = predicted[month_mask]
+    dates = cleaned_data.loc[month_mask, "DATE"].dt.strftime("%m-%d-%Y").tolist()
+
+    # sends data to visualizer.py function to graph
+    if len(actual) == 0:
+        print(f"No data available for month {selected_month}.")
+    else:
+        Visualizer.plot_humidity_predictions(actual, predicted_for_month, x_labels=dates)
+
 
 def show_menu():
     print("\nClimate Analyzer\n"
@@ -224,7 +266,8 @@ def show_menu():
           "1) Predict Humidity in Tallahassee, Fl\n"
           "2) Predict Average Monthly Temperature in Tallahassee, Fl\n"
           "3) Cluster Monthly Temperatures from Tallahasssee, Chicago & NYC\n"
-          "4) Detect Temperature Anomalies in Tallahassee\n"
+          "4) Detect Temperature Anomalies in Tallahassee, Fl\n"
+          "5) Graph Predicted Humidity vs Real Humidity in Tallahassee, Fl\n"
           "exit To exit program")
 
 if __name__ == "__main__":
@@ -240,6 +283,8 @@ if __name__ == "__main__":
             cluster_temperatures()
         elif selection == "4":
             detect_daily_anomalies()
+        elif selection == "5":
+            humidity_graph()
         elif selection == "exit" or selection == "EXIT":
             print("Goodbye...")
             running = False
