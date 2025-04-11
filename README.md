@@ -28,13 +28,13 @@ After the project is ran, the user will be prompted with six options:
    If this option is selected, the program uses machine learning to predict and output the average monthly temperature for each month in 2026.
 
 ## Cluster Monthly Temperatures from Tallahasssee, Chicago & NYC
-   ...
-
+   If this option is selected, the program displays monthly temperatures from Tallahassee, Chicago, and NYC clustered by temperature. 
+   
 ## Detect Temperature Anomalies in Tallahassee, Fl
-   ...
+   If this option is selected, the program displays any abnormal temperatures in Tallahassee.
 
 ## Graph Predicted Humidity vs Real Humidity in Tallahassee, Fl
-   ...
+   If this option is selected, a graph is generated that compares the predicted humidity to the actual humidity in Tallahassee
 
 ## Exit Program
    The user enters "exit" to close the program.
