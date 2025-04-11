@@ -4,6 +4,7 @@ import json
 from unittest.mock import patch, mock_open
 from src.data_processor import DataProcessor
 
+
 class TestDataProcessor(unittest.TestCase):
 
     def setUp(self):
@@ -46,7 +47,6 @@ class TestDataProcessor(unittest.TestCase):
         self.assertEqual(len(df), 2)
         self.assertIn("temp", df.columns)
 
-
     def test_clean_data(self):
         """tests to make sure data gets cleaned (making sure year exists)"""
         processor = DataProcessor(self.mock_path)
@@ -72,14 +72,17 @@ class TestDataProcessor(unittest.TestCase):
 
     def test_load_and_clean_with_city(self):
         """tests load/clean command that includes the city """
-        with patch("builtins.open", mock_open(read_data=json.dumps(self.sample_data))), \
+        with patch("builtins.open",
+                   mock_open(read_data=json.dumps(self.sample_data))), \
              patch("json.load", return_value=self.sample_data):
 
-            df = DataProcessor.load_and_clean_with_city(self.mock_path, "Tallahassee")
+            df = DataProcessor.load_and_clean_with_city(self.mock_path,
+                                                        "Tallahassee")
 
             self.assertIn("city", df.columns)
             self.assertTrue((df["city"] == "Tallahassee").all())
             self.assertEqual(len(df), 2)
+
 
 if __name__ == '__main__':
     unittest.main()
