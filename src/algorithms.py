@@ -43,7 +43,7 @@ class CustomHumidityPredictor(BaseEstimator, RegressorMixin):
         return np.dot(input_data, self.feature_weights) + self.bias_term
 
 class CustomTemperaturePredictor(BaseEstimator, RegressorMixin):
-    def __init__(self, learning_rate=1e-4, n_iterations=10000):
+    def __init__(self, learning_rate=1e-5, n_iterations=10000):
         self.learning_rate = learning_rate
         self.n_iterations = n_iterations
         self.feature_weights = None
@@ -54,11 +54,23 @@ class CustomTemperaturePredictor(BaseEstimator, RegressorMixin):
         self.feature_weights = np.random.randn(num_features) * 0.01
         self.bias_term = 0
 
+        # checks to make sure the data is all valid
+        if np.isnan(input_data).any() or np.isnan(actual_temperature).any():
+            print("Training failed: Found NaN in input data")
+            return self
+        if np.isinf(input_data).any() or np.isinf(actual_temperature).any():
+            print("Training failed: Found Inf in input data")
+            return self
+
         for _ in range(self.n_iterations):
             predicted_temperature = np.dot(input_data, self.feature_weights) + self.bias_term
             prediction_errors = predicted_temperature - actual_temperature
             gradient_weights = (2 / num_rows) * np.dot(input_data.T, prediction_errors)
             gradient_bias = (2 / num_rows) * np.sum(prediction_errors)
+
+            # removes anything that will have super large change to the model & break it
+            np.clip(gradient_weights, -10, 10, out=gradient_weights)
+            gradient_bias = np.clip(gradient_bias, -10, 10)
 
             self.feature_weights -= self.learning_rate * gradient_weights
             self.bias_term -= self.learning_rate * gradient_bias

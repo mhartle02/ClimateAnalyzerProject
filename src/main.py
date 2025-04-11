@@ -82,68 +82,31 @@ def predict_humidity():
 
 
 def predict_temperature():
-    # Step 1: Clean data
-    data = cleanData()  # Assuming cleanData() cleans and returns the DataFrame
+    data = cleanData()
 
-    # Step 2: Group data by year and month
+    # Group by month and year to average
     monthly = data.groupby(["YEAR", "MONTH"]).agg({
-        'temp': 'mean',
-        'dew': 'mean',
-        'humidity': 'mean',
-        'precip': 'sum',
-        'windspeed': 'mean'
+        "temp": "mean",
+        "dew": "mean",
+        "humidity": "mean",
+        "precip": "sum",
+        "windspeed": "mean"
     }).reset_index()
 
-    # Step 3: Create feature 'prev_temp' (previous month's temperature)
-    monthly['prev_temp'] = monthly['temp'].shift(1)
+    print("Predicted Monthly Average Temperatures (based on historical trends):")
+    for month in range(1, 13):
+        month_data = monthly[monthly["MONTH"] == month]
+        if len(month_data) < 2:
+            print(f"Not enough data for month {month}")
+            continue
 
-    # Remove rows with NaN values (after the shift)
-    monthly = monthly.dropna()
+        X = month_data[["dew", "humidity", "precip", "windspeed"]].values
+        y = month_data["temp"].values
 
-    # Step 4: Prepare features (X) and target (y)
-    X = monthly[['MONTH', 'dew', 'humidity', 'precip', 'windspeed', 'prev_temp']].values
-    y = monthly['temp'].values
-
-    # Step 5: Train the custom temperature predictor
-    model = CustomTemperaturePredictor(learning_rate=1e-5, n_iterations=10000)
-    model.fit(X, y)
-
-    # Step 6: Predict temperature for the next months
-    # Start with the last month in the dataset
-    last_month_data = monthly.iloc[-1].copy()  # Make a copy of the last row
-
-    last_month_features = np.array([[last_month_data['MONTH'],
-                                     last_month_data['dew'],
-                                     last_month_data['humidity'],
-                                     last_month_data['precip'],
-                                     last_month_data['windspeed'],
-                                     last_month_data['temp']]])
-
-    future_months = 12  # Predicting for the next 12 months
-    predicted_temperatures = []
-
-    for _ in range(future_months):
-        predicted_temp = model.predict(last_month_features)[0]
-        predicted_temperatures.append(predicted_temp)
-
-        # Update the last month's data for the next prediction
-        # We update the `prev_temp` and `month` for the next prediction
-        next_month = (last_month_data['MONTH'] % 12) + 1
-        last_month_features = np.array([[next_month,
-                                         last_month_data['dew'],
-                                         last_month_data['humidity'],
-                                         last_month_data['precip'],
-                                         last_month_data['windspeed'],
-                                         predicted_temp]])
-
-        # Update last month data for the next iteration
-        last_month_data['MONTH'] = next_month
-        last_month_data['temp'] = predicted_temp  # Use predicted temp as previous month's temp for next month
-
-    # Step 7: Print out the predicted temperatures for the next 12 months
-    print("Predicted Average Temperatures for the next 12 months:")
-    for i, temp in enumerate(predicted_temperatures, 1):
-        print(f"Month {i}: {temp:.2f}°F")
+        model = CustomTemperaturePredictor(learning_rate=1e-4, n_iterations=10000)
+        model.fit(X, y)
+        predicted_temp = model.predict([X[-1]])[0]
+        print(f"Month {month}: {predicted_temp:.2f}°F")
 
 
 def cluster_temperatures():
