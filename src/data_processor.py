@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import json
 
+
 class DataProcessor:
     def __init__(self, file_path):
         self.file_path = file_path
@@ -24,16 +25,20 @@ class DataProcessor:
 
         # changes datetime to separate day month and year
         if "datetime" in self.data.columns:
-            self.data["datetime"] = pd.to_datetime(self.data["datetime"], errors='coerce')
+            self.data["datetime"] = (pd.to_datetime
+                                     (self.data["datetime"],
+                                      errors='coerce'))
             self.data["YEAR"] = self.data["datetime"].dt.year
             self.data["MONTH"] = self.data["datetime"].dt.month
             self.data["DAY"] = self.data["datetime"].dt.day
             self.data.drop(columns=["datetime"], inplace=True)
 
         # only the columns that make sense with what we need
-        desired_columns = ["DAY", "MONTH", "YEAR", "temp", "dew", "humidity", "precip", "windspeed"]
+        desired_columns = ["DAY", "MONTH", "YEAR", "temp", "dew",
+                           "humidity", "precip", "windspeed"]
 
-        existing_columns = [col for col in desired_columns if col in self.data.columns]
+        existing_columns = [col for col in desired_columns if col
+                            in self.data.columns]
         self.data = self.data[existing_columns]
 
         # getting rid of any rows that may contain null values (incase)

@@ -1,23 +1,26 @@
 from data_processor import DataProcessor
 from visualizer import Visualizer
-from algorithms import CustomHumidityPredictor, CustomTemperaturePredictor, Clustering, Anomaly
+from algorithms import (CustomHumidityPredictor, CustomTemperaturePredictor,
+                        Clustering, Anomaly)
 import pandas as pd
 import numpy as np
 from time import *
 
+
 def cleanData():
     file_path = "data/tallahassee_data.json"
 
-    #loads in the data from data_processor.py file
+    # loads in the data from data_processor.py file
     dp = DataProcessor(file_path)
     data = dp.load_data()
 
     if data is not None:
-        #cleans data from data_processor.py file
+        # cleans data from data_processor.py file
         cleaned_data = dp.clean_data()
         return cleaned_data
     else:
         print("Data not loaded")
+
 
 def seeCleanedData():
     cleaned_data = cleanData()
@@ -30,55 +33,61 @@ def seeCleanedData():
 
 
 def predict_humidity():
-        cleaned_data = cleanData()
-        # X = columns we want to look at to see how it effects Y
-        X = cleaned_data[["temp", "dew", "precip", "windspeed"]].values
-        y = cleaned_data["humidity"].values
+    cleaned_data = cleanData()
+    # X = columns we want to look at to see how it effects Y
+    X = cleaned_data[["temp", "dew", "precip", "windspeed"]].values
+    y = cleaned_data["humidity"].values
 
-        # checks and removes any invalid rows
-        valid_indices = ~np.isnan(X).any(axis=1) & ~np.isnan(y)
-        X = X[valid_indices]
-        y = y[valid_indices]
+    # checks and removes any invalid rows
+    valid_indices = ~np.isnan(X).any(axis=1) & ~np.isnan(y)
+    X = X[valid_indices]
+    y = y[valid_indices]
 
-        # creates model that learns from the data set to predict humidity
-        model = CustomHumidityPredictor(learning_rate=1e-4, n_iterations=10000)
-        model.fit(X, y)
-        print("\nFinished training model")
+    # creates model that learns from the data set to predict humidity
+    model = CustomHumidityPredictor(learning_rate=1e-4, n_iterations=10000)
+    model.fit(X, y)
+    print("\nFinished training model")
 
-        print("\nEnter data to predict humidity:")
+    print("\nEnter data to predict humidity:")
 
-        try:
-            print("\nEnter values for humidity prediction below.")
-            print(
-                "Temperature (°F): The air temperature. In Tallahassee, it typically ranges from 35°F (winter) to 95°F (summer).")
-            temp = float(input("Enter Temperature (°F): "))
+    try:
+        print("\nEnter values for humidity prediction below.")
+        print(
+            "Temperature (°F): The air temperature. In Tallahassee, "
+            "it typically ranges from 35°F (winter) to 95°F (summer).")
+        temp = float(input("Enter Temperature (°F): "))
 
-            print("\nDew Point (°F): The temperature at which dew forms. Higher dew points feel more humid.")
-            print("In Tallahassee, dew points usually range from 50°F to 75°F.")
-            dew = float(input("Enter Dew Point (°F): "))
+        print("\nDew Point (°F): The temperature at which dew forms. "
+              "Higher dew points feel more humid.")
+        print("In Tallahassee, dew points usually range "
+              "from 50°F to 75°F.")
+        dew = float(input("Enter Dew Point (°F): "))
 
-            print("\nPrecipitation (inches): Total rainfall for the day.")
-            print("Tallahassee typically sees 0.1–1 inch on rainy days. Over 2 inches indicates heavy rain.")
-            precip = float(input("Enter Precipitation (inches): "))
+        print("\nPrecipitation (inches): Total rainfall for the day.")
+        print("Tallahassee typically sees 0.1–1 inch on rainy days. "
+              "Over 2 inches indicates heavy rain.")
+        precip = float(input("Enter Precipitation (inches): "))
 
-            print("\nWindspeed (mph): Average windspeed. Higher winds usually reduce humidity.")
-            print(
-                "In Tallahassee, average daily windspeed ranges from 5 to 15 mph, with occasional gusts above 20 mph.")
-            windspeed = float(input("Enter Windspeed (mph): "))
+        print("\nWindspeed (mph): Average windspeed. Higher winds "
+              "usually reduce humidity.")
+        print(
+            "In Tallahassee, average daily windspeed ranges from "
+            "5 to 15 mph, with occasional gusts above 20 mph.")
+        windspeed = float(input("Enter Windspeed (mph): "))
 
-            user_input = pd.DataFrame({
-                "temp": [temp],
-                "dew": [dew],
-                "precip": [precip],
-                "windspeed": [windspeed]
-            })
+        user_input = pd.DataFrame({
+            "temp": [temp],
+            "dew": [dew],
+            "precip": [precip],
+            "windspeed": [windspeed]
+        })
 
-            # sends user data into the model and predicts humidity
-            predicted_humidity = model.predict(user_input.values)[0]
-            print(f"\nPredicted Humidity: {predicted_humidity:.2f}%")
+        # sends user data into the model and predicts humidity
+        predicted_humidity = model.predict(user_input.values)[0]
+        print(f"\nPredicted Humidity: {predicted_humidity:.2f}%")
 
-        except ValueError:
-            print("Enter numbers only. Try again.")
+    except ValueError:
+        print("Enter numbers only. Try again.")
 
 
 def predict_temperature():
@@ -93,7 +102,8 @@ def predict_temperature():
         "windspeed": "mean"
     }).reset_index()
 
-    print("Predicted Monthly Average Temperatures (based on historical trends):")
+    print("Predicted Monthly Average Temperatures (based on "
+          "historical trends):")
     for month in range(1, 13):
         month_data = monthly[monthly["MONTH"] == month]
         if len(month_data) < 2:
@@ -103,7 +113,8 @@ def predict_temperature():
         X = month_data[["dew", "humidity", "precip", "windspeed"]].values
         y = month_data["temp"].values
 
-        model = CustomTemperaturePredictor(learning_rate=1e-4, n_iterations=10000)
+        model = CustomTemperaturePredictor(learning_rate=1e-4,
+                                           n_iterations=10000)
         model.fit(X, y)
         predicted_temp = model.predict([X[-1]])[0]
         print(f"Month {month}: {predicted_temp:.2f}°F")
@@ -119,7 +130,8 @@ def cluster_temperatures():
     # puts all the data for each city into one table
     all_city_data = []
     for city_name, file_path in city_files.items():
-        city_data = DataProcessor.load_and_clean_with_city(file_path, city_name)
+        city_data = (DataProcessor.load_and_clean_with_city
+                     (file_path, city_name))
         if city_data is not None:
             all_city_data.append(city_data)
 
@@ -132,19 +144,22 @@ def cluster_temperatures():
 
     # runs cluster function based on the avg temp values
     temperature_values = monthly_averages[["temp"]].values
-    cluster_groups, cluster_centers = Clustering(temperature_values, num_clusters=3)
+    cluster_groups, cluster_centers = Clustering(temperature_values,
+                                                 num_clusters=3)
 
     # prints results
     print("\nGrouped Months by Temperature:\n")
     for group_number, month_indices in cluster_groups.items():
         center_temp = cluster_centers[group_number][0]
-        print(f"Group {group_number + 1} (Average Temp: {center_temp:.2f}°F):")
+        print(f"Group {group_number + 1} (Average Temp: "
+              f"{center_temp:.2f}°F):")
         for i in month_indices:
             row = monthly_averages.iloc[i]
-            print(f"  {row['city']} - {int(row['MONTH'])}/{int(row['YEAR'])} (Avg Temp: {row['temp']:.2f}°F)")
+            print(f"  {row['city']} - {int(row['MONTH'])}/"
+                  f"{int(row['YEAR'])} (Avg Temp: {row['temp']:.2f}°F)")
         print()
 
-    #creates empty lists so data can be appended to send to graph
+    # creates empty lists so data can be appended to send to graph
     labels = []
     temps = []
     descriptions = []
@@ -155,11 +170,12 @@ def cluster_temperatures():
             row = monthly_averages.iloc[i]
             labels.append(group_id)
             temps.append(row["temp"])
-            descriptions.append(f"{row['city']} - {int(row['MONTH'])}/{int(row['YEAR'])}")
+            descriptions.append(f"{row['city']} - "
+                                f"{int(row['MONTH'])}/{int(row['YEAR'])}")
 
     # sends to graph from visualizer.py
-    Visualizer.plot_clustered_data(temps, labels, descriptions, cluster_centers)
-
+    Visualizer.plot_clustered_data(temps, labels,
+                                   descriptions, cluster_centers)
 
 
 def detect_daily_anomalies():
@@ -180,9 +196,11 @@ def detect_daily_anomalies():
                 direction = "hotter"
             else:
                 direction = "colder"
-            print(f"{date} → {temp:.2f}°F ({abs(diff):.2f}°F {direction} than monthly average of {month_avg:.2f}°F)")
+            print(f"{date} → {temp:.2f}°F ({abs(diff):.2f}°F "
+                  f"{direction} than monthly average of {month_avg:.2f}°F)")
     else:
         print("\nNo anomalies detected.")
+
 
 def humidity_graph():
     cleaned_data = cleanData()
@@ -196,10 +214,12 @@ def humidity_graph():
     cleaned_data = cleaned_data[valid_indices]
 
     # creates DATE column to use for the x-axis
-    cleaned_data["DATE"] = pd.to_datetime(cleaned_data[["YEAR", "MONTH", "DAY"]])
+    cleaned_data["DATE"] = pd.to_datetime(cleaned_data[["YEAR",
+                                                        "MONTH", "DAY"]])
 
     # trains model (same as humidity predictor function)
-    model = CustomHumidityPredictor(learning_rate=1e-4, n_iterations=10000)
+    model = CustomHumidityPredictor(learning_rate=1e-4,
+                                    n_iterations=10000)
     model.fit(X, y)
     print("\nFinished training model")
     # gets predictions
@@ -207,7 +227,8 @@ def humidity_graph():
 
     # asks user what month they want to see predictions vs actual graph
     try:
-        selected_month = int(input("Enter a month number (1-12) to visualize humidity: "))
+        selected_month = int(input("Enter a month number (1-12) "
+                                   "to visualize humidity: "))
         if not 1 <= selected_month <= 12:
             raise ValueError("Invalid month.")
     except ValueError:
@@ -218,13 +239,15 @@ def humidity_graph():
     month_mask = cleaned_data["MONTH"] == selected_month
     actual = y[month_mask]
     predicted_for_month = predicted[month_mask]
-    dates = cleaned_data.loc[month_mask, "DATE"].dt.strftime("%m-%d-%Y").tolist()
+    dates = (cleaned_data.loc[month_mask, "DATE"]
+             .dt.strftime("%m-%d-%Y").tolist())
 
     # sends data to visualizer.py function to graph
     if len(actual) == 0:
         print(f"No data available for month {selected_month}.")
     else:
-        Visualizer.plot_humidity_predictions(actual, predicted_for_month, x_labels=dates)
+        (Visualizer.plot_humidity_predictions
+         (actual, predicted_for_month, x_labels=dates))
 
 
 def show_menu():
@@ -233,10 +256,13 @@ def show_menu():
           "0) Show cleaned Tallahassee data\n"
           "1) Predict Humidity in Tallahassee, Fl\n"
           "2) Predict Average Monthly Temperature in Tallahassee, Fl\n"
-          "3) Cluster Monthly Temperatures from Tallahasssee, Chicago & NYC\n"
+          "3) Cluster Monthly Temperatures from Tallahasssee, "
+          "Chicago & NYC\n"
           "4) Detect Temperature Anomalies in Tallahassee, Fl\n"
-          "5) Graph Predicted Humidity vs Real Humidity in Tallahassee, Fl\n"
+          "5) Graph Predicted Humidity vs Real Humidity in "
+          "Tallahassee, Fl\n"
           "exit To exit program")
+
 
 if __name__ == "__main__":
     running = True
@@ -260,4 +286,3 @@ if __name__ == "__main__":
             running = False
         else:
             print("\nInvalid selection.\n")
-
