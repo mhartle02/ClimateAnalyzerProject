@@ -13,17 +13,18 @@ def cleanData():
     data = dp.load_data()
 
     if data is not None:
-        print("Loaded data successfully from file")
-        print("First few rows:\n", data.head())
-
         #cleans data from data_processor.py file
         cleaned_data = dp.clean_data()
-        print("Data cleaned successfully")
-        print("Columns after cleaning:\n", cleaned_data.columns.tolist())
-        print("\nFirst few cleaned rows:\n", cleaned_data.head())
         return cleaned_data
     else:
         print("Data not loaded")
+
+def seeCleanedData():
+    data = cleanData()
+    cleaned_data = data.clean_data()
+    print("Data cleaned successfully")
+    print("Columns after cleaning:\n", cleaned_data.columns.tolist())
+    print("\nFirst few cleaned rows:\n", cleaned_data.head())
 
 def predict_humidity():
         cleaned_data = cleanData()
