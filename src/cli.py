@@ -5,6 +5,7 @@ from visualizer import Visualizer
 import pandas as pd
 import numpy as np
 
+
 def load_clean_data():
     processor = DataProcessor("data/tallahassee_data.json")
     data = processor.load_data()
@@ -13,6 +14,7 @@ def load_clean_data():
     else:
         print("Could not load data.")
         return None
+
 
 def run_humidity():
     data = load_clean_data()
@@ -41,7 +43,11 @@ def run_humidity():
         return
 
     month_indices = data["MONTH"] == month
-    dates = pd.to_datetime(data[month_indices][["YEAR", "MONTH", "DAY"]]).dt.strftime("%Y-%m-%d").tolist()
+    dates = (
+        pd.to_datetime(data[month_indices][["YEAR", "MONTH", "DAY"]])
+        .dt.strftime("%Y-%m-%d")
+        .tolist()
+    )
 
     Visualizer.plot_humidity_predictions(
         actual=y[month_indices],
@@ -63,7 +69,10 @@ def run_clustering():
             all_data.append(df)
 
     full_data = pd.concat(all_data)
-    grouped = full_data.groupby(["city", "YEAR", "MONTH"]).agg({"temp": "mean"}).reset_index()
+    grouped = (
+        full_data.groupby(["city", "YEAR", "MONTH"])
+        .agg({"temp": "mean"}).reset_index()
+    )
 
     temps = grouped[["temp"]].values
     groups, centers = Clustering(temps, num_clusters=3)
@@ -74,9 +83,12 @@ def run_clustering():
             row = grouped.iloc[idx]
             labels.append(group_id)
             values.append(row["temp"])
-            descriptions.append(f"{row['city']} - {int(row['MONTH'])}/{int(row['YEAR'])}")
+            descriptions.append(
+                f"{row['city']} - {int(row['MONTH'])}/{int(row['YEAR'])}"
+            )
 
     Visualizer.plot_clustered_data(values, labels, descriptions, centers)
+
 
 def run_anomalies():
     data = load_clean_data()
@@ -85,14 +97,19 @@ def run_anomalies():
         print("\nDetected anomalies:")
         for date, temp, diff, avg in anomalies:
             label = "hotter" if diff > 0 else "colder"
-            print(f"{date} → {temp:.2f}°F ({abs(diff):.2f}°F {label} than {avg:.2f}°F)")
+            print(
+                f"{date} → {temp:.2f}°F ({abs(diff):.2f}°F "
+                f"{label} than {avg:.2f}°F)"
+            )
         Visualizer.plot_anomaly_bars(anomalies)
     else:
         print("No anomalies found.")
 
+
 def main():
     """
-    Makes it so you can run the graph functions from the command line, without
+    Makes it so you can run the graph functions from the
+    command line, without
     having to go through the menu
 
     [OPTION] can be humidity, cluster or anomaly
@@ -100,8 +117,11 @@ def main():
     python3 src/cli.py --graph [OPTION]
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument("--graph", choices=["humidity", "cluster", "anomaly"],
-                        help="Choose a task: humidity, cluster, anomalies")
+    parser.add_argument(
+        "--graph",
+        choices=["humidity", "cluster", "anomaly"],
+        help="Choose a task: humidity, cluster, anomalies"
+    )
 
     args = parser.parse_args()
 
@@ -112,7 +132,9 @@ def main():
     elif args.graph == "anomaly":
         run_anomalies()
     else:
-        print("Invalid task. Use --graph with one of: humidity, cluster, anomaly")
+        print("Invalid task. Use --graph with one of: "
+              "humidity, cluster, anomaly")
+
 
 if __name__ == "__main__":
     main()
