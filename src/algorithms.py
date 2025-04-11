@@ -98,7 +98,7 @@ def Clustering(data_points, num_clusters=3, max_iterations=100):
 
     return clusters_dict, cluster_centers
 
-def detect_anomalies(df, temp_column="temp", temp_diff_threshold=15):
+def Anomaly(df, temp_column="temp", temp_diff_threshold=15):
     # creates DATE and finds all with each MONTH_NUM
     df["DATE"] = pd.to_datetime(df[["YEAR", "MONTH", "DAY"]])
     df["MONTH_NUM"] = df["DATE"].dt.month

@@ -1,6 +1,6 @@
 from data_processor import DataProcessor
 from visualizer import Visualizer
-from algorithms import CustomHumidityPredictor, CustomTemperaturePredictor, Clustering, detect_anomalies
+from algorithms import CustomHumidityPredictor, CustomTemperaturePredictor, Clustering, Anomaly
 import pandas as pd
 import numpy as np
 from time import *
@@ -202,7 +202,7 @@ def detect_daily_anomalies():
         return
 
     # passes cleaned data into anomaly function from algorithms.py
-    anomalies = detect_anomalies(cleaned_data)
+    anomalies = Anomaly(cleaned_data)
 
     # takes anomalies and prints them all out
     if anomalies:
