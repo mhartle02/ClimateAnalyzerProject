@@ -20,11 +20,14 @@ def cleanData():
         print("Data not loaded")
 
 def seeCleanedData():
-    data = cleanData()
-    cleaned_data = data.clean_data()
-    print("Data cleaned successfully")
-    print("Columns after cleaning:\n", cleaned_data.columns.tolist())
-    print("\nFirst few cleaned rows:\n", cleaned_data.head())
+    cleaned_data = cleanData()
+    if cleaned_data is not None:
+        print("Data cleaned successfully")
+        print("Columns after cleaning:\n", cleaned_data.columns.tolist())
+        print("\nFirst few cleaned rows:\n", cleaned_data.head())
+    else:
+        print("Failed to clean data.")
+
 
 def predict_humidity():
         cleaned_data = cleanData()
@@ -264,6 +267,7 @@ def humidity_graph():
 def show_menu():
     print("\nClimate Analyzer\n"
           "----------------\n"
+          "0) Show cleaned Tallahassee data\n"
           "1) Predict Humidity in Tallahassee, Fl\n"
           "2) Predict Average Monthly Temperature in Tallahassee, Fl\n"
           "3) Cluster Monthly Temperatures from Tallahasssee, Chicago & NYC\n"
@@ -286,6 +290,8 @@ if __name__ == "__main__":
             detect_daily_anomalies()
         elif selection == "5":
             humidity_graph()
+        elif selection == "0":
+            seeCleanedData()
         elif selection == "exit" or selection == "EXIT":
             print("Goodbye...")
             running = False
