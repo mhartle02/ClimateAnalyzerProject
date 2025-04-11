@@ -4,6 +4,7 @@ This project analyzes climate data, implements predictive algorithms, and visual
 
 # HOW TO RUN:
 In your projects root directory
+
 1. Create a virtual environment
    - python3 -m venv .venv
 2. Start the virtual environment
@@ -13,6 +14,16 @@ In your projects root directory
    - pip install -r requirements.txt
 4. Run the project
    - python3 src/main.py
+
+If you want to run just the graphs from the command line, you can run:
+1. python3 src/cli.py --graph humidity
+2. python3 src/cli.py --graph cluster
+3. python3 src/cli.py --graph anomaly
+
+If you want to run the test files, you can run:
+1. python3 -m unittest tests/test_algorithms.py
+2. python3 -m unittest tests/test_data_processor.py
+3. python3 -m unittest tests/test_visualizer.py
 
 # USAGE
 After the project is ran, the user will be prompted with six options:

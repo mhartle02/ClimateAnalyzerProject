@@ -95,7 +95,7 @@ def main():
     Makes it so you can run the graph functions from the command line, without
     having to go through the menu
 
-    [OPTION] can be temp, humidity, cluster or anomaly
+    [OPTION] can be humidity, cluster or anomaly
     Run:
     python3 src/cli.py --graph [OPTION]
     """
