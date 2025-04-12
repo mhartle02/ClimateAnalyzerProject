@@ -33,8 +33,8 @@ class TestAlgorithms(unittest.TestCase):
 
         # Check that predictions are close +- 1
         self.assertTrue(np.allclose(predictions, y, atol=1.0))
-        print(f"test_humidity_predictor took {time.time() -
-                                              start_time:.4f} seconds")
+        print(f"test_humidity_predictor took "
+              f"{time.time() - start_time:.4f} seconds")
 
     def test_temperature_predictor(self):
         """Tests CustomTemperaturePredictor with synthetic linear data."""
