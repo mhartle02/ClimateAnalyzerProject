@@ -7,6 +7,10 @@ import numpy as np
 
 
 def load_clean_data():
+    """
+    Loads and cleans Tallahassee climate data using DataProcessor.
+    Returns the cleaned DataFrame or prints an error message.
+    """
     processor = DataProcessor("data/tallahassee_data.json")
     data = processor.load_data()
     if data is not None:
@@ -17,6 +21,10 @@ def load_clean_data():
 
 
 def run_humidity():
+    """
+    Trains a humidity prediction model and plots actual vs predicted humidity
+    for a user-specified month.
+    """
     data = load_clean_data()
     if data is None:
         return
@@ -57,6 +65,10 @@ def run_humidity():
 
 
 def run_clustering():
+    """
+    Loads data from three cities, computes monthly average temperatures,
+    clusters them, and plots the cluster visualization.
+    """
     city_files = {
         "Tallahassee": "data/tallahassee_data.json",
         "New York City": "data/nyc_data.json",
@@ -91,6 +103,10 @@ def run_clustering():
 
 
 def run_anomalies():
+    """
+    Detects daily temperature anomalies from Tallahassee data,
+    prints them, and visualizes the results.
+    """
     data = load_clean_data()
     anomalies = Anomaly(data)
     if anomalies:
@@ -108,13 +124,8 @@ def run_anomalies():
 
 def main():
     """
-    Makes it so you can run the graph functions from the
-    command line, without
-    having to go through the menu
-
-    [OPTION] can be humidity, cluster or anomaly
-    Run:
-    python3 src/cli.py --graph [OPTION]
+    Allows user to choose a graphing task via the --graph command-line flag.
+    Valid options: humidity, cluster, anomaly.
     """
     parser = argparse.ArgumentParser()
     parser.add_argument(

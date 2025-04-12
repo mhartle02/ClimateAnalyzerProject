@@ -7,6 +7,10 @@ class Visualizer:
     @staticmethod
     def plot_clustered_data(temperatures, cluster_numbers,
                             city_month_labels, cluster_centers):
+        """
+        Plots clustered monthly average temperatures with
+        city labels and cluster lines.
+        """
         # sorts data so appears on graph in order
         sort_order = np.argsort(temperatures)
         sorted_temps = [temperatures[i] for i in sort_order]
@@ -42,6 +46,9 @@ class Visualizer:
 
     @staticmethod
     def plot_humidity_predictions(actual, predicted, x_labels):
+        """
+        Plots a comparison between actual and predicted humidity values.
+        """
         plt.figure(figsize=(12, 6))
         x = range(len(actual)) if x_labels is None else x_labels
 
@@ -64,6 +71,10 @@ class Visualizer:
 
     @staticmethod
     def plot_anomaly_bars(anomalies):
+        """
+        Plots temperature anomalies as red or blue
+        bars based on deviation from average.
+        """
         # gets dates and temp diffs to use in graph
         dates = [a[0] for a in anomalies]
         differences = [a[2] for a in anomalies]

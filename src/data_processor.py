@@ -5,10 +5,16 @@ import json
 
 class DataProcessor:
     def __init__(self, file_path):
+        """
+        Initializes the DataProcessor with a file path.
+        """
         self.file_path = file_path
         self.data = None
 
     def load_data(self):
+        """
+        Loads JSON weather data from the file and converts it into a DataFrame.
+        """
         try:
             with open(self.file_path, 'r') as f:
                 raw_json = json.load(f)
@@ -19,6 +25,10 @@ class DataProcessor:
             return None
 
     def clean_data(self):
+        """
+        Cleans the loaded data by formatting dates, selecting relevant columns,
+        and removing rows with missing values.
+        """
         if self.data is None:
             print("Data hasn't been loaded in.")
             return None
@@ -48,6 +58,9 @@ class DataProcessor:
 
     @staticmethod
     def load_and_clean_with_city(file_path, city_name):
+        """
+        Loads and cleans data from a file, then adds a city column to the result.
+        """
         processor = DataProcessor(file_path)
         data = processor.load_data()
         if data is not None:

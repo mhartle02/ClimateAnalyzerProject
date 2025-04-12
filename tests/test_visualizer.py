@@ -4,7 +4,11 @@ from src.visualizer import Visualizer
 
 
 class TestVisualizer(unittest.TestCase):
+    """Tests for the Visualizer class plotting functions."""
+
     def test_plot_clustered_data(self):
+        """Tests the plot_clustered_data() method with sample
+        temperature clusters."""
         # Record the start time
         start_time = time.time()
 
@@ -29,6 +33,8 @@ class TestVisualizer(unittest.TestCase):
               f"{time_taken:.4f} seconds")
 
     def test_plot_humidity_predictions(self):
+        """Tests the plot_humidity_predictions() method with sample
+        actual and predicted data."""
         # start time
         start_time = time.time()
 
@@ -48,6 +54,8 @@ class TestVisualizer(unittest.TestCase):
               f"{time_taken:.4f} seconds")
 
     def test_plot_anomaly_bars(self):
+        """Tests the plot_anomaly_bars() method with
+        example anomaly data."""
         # start time
         start_time = time.time()
 

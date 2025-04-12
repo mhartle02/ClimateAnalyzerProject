@@ -11,11 +11,15 @@ from src.algorithms import (
 
 
 class TestAlgorithms(unittest.TestCase):
+    """Unit tests for verifying custom algorithm implementations."""
+
     # random seeding for the data
     def setUp(self):
+        """Sets a fixed random seed before each test."""
         np.random.seed(42)
 
     def test_humidity_predictor(self):
+        """Tests CustomHumidityPredictor with synthetic linear data."""
         start_time = time.time()
 
         # Generate linear humidity data
@@ -33,6 +37,7 @@ class TestAlgorithms(unittest.TestCase):
                                               start_time:.4f} seconds")
 
     def test_temperature_predictor(self):
+        """Tests CustomTemperaturePredictor with synthetic linear data."""
         start_time = time.time()
 
         X = np.random.rand(100, 2)
@@ -48,6 +53,7 @@ class TestAlgorithms(unittest.TestCase):
               f"{time.time() - start_time:.4f} seconds")
 
     def test_clustering(self):
+        """Tests the Clustering function with three known clusters."""
         start_time = time.time()
 
         # Generate 3 clusters around 3 different centers
@@ -65,6 +71,7 @@ class TestAlgorithms(unittest.TestCase):
         print(f"test_clustering took {time.time() - start_time:.4f} seconds")
 
     def test_anomaly(self):
+        """Tests the Anomaly function to detect temperature outliers."""
         start_time = time.time()
 
         data = {

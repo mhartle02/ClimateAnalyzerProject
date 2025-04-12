@@ -1,6 +1,7 @@
 # Climate Analyzer Project
 
-This project analyzes climate data, implements predictive algorithms, and visualizes results.
+This project analyzes climate data, implements 
+predictive algorithms, and visualizes results.
 
 # HOW TO RUN:
 In your projects root directory
@@ -15,7 +16,8 @@ In your projects root directory
 4. Run the project
    - python3 src/main.py
 
-If you want to run just the graphs from the command line, you can run:
+If you want to run just the graphs from the command 
+line, you can run:
 1. python3 src/cli.py --graph humidity
 2. python3 src/cli.py --graph cluster
 3. python3 src/cli.py --graph anomaly
@@ -26,28 +28,39 @@ If you want to run the test files, you can run:
 3. python3 -m unittest tests/test_visualizer.py
 
 # USAGE
-After the project is ran, the user will be prompted with six options:
+After the project is ran, the user will be prompted 
+with six options:
 ## Predict Humidity in Tallahassee, Fl
-   If this option is selected, the program trains our machine learning model and the user will be asked to provide the following values: <br/>
+   If this option is selected, the program trains our 
+   machine learning model and the user will be asked 
+   to provide the following values: <br/>
       - Air temperature <br/>
       - Dew point <br/>
       - Precipitation (inches) <br/>
       - Windspeed <br/>
-    With these values our algorithm calculates and outputs the predicted humidity percentage.
+    With these values our algorithm calculates and 
+   outputs the predicted humidity percentage.
 
 ## Predict Average Monthly Temperature in Tallahassee, Fl
-   If this option is selected, the program uses machine learning to predict and output the average monthly temperature for each month in 2026.
+   If this option is selected, the program uses machine 
+   learning to predict and output the average monthly 
+   temperature for each month in 2026.
 
 ## Cluster Monthly Temperatures from Tallahasssee, Chicago & NYC
-   If this option is selected, the program displays monthly temperatures from Tallahassee, Chicago, and NYC clustered by temperature. 
+   If this option is selected, the program displays 
+   monthly temperatures from Tallahassee, Chicago, and 
+   NYC clustered by temperature. 
    
 ## Detect Temperature Anomalies in Tallahassee, Fl
-   If this option is selected, the program displays any abnormal temperatures in Tallahassee.
+   If this option is selected, the program displays any
+   abnormal temperatures in Tallahassee.
 
 ## Graph Predicted Humidity vs Real Humidity in Tallahassee, Fl
-   If this option is selected, a graph is generated that compares the predicted humidity to the actual humidity in Tallahassee
+   If this option is selected, a graph is generated that compares 
+   the predicted humidity to the actual humidity in Tallahassee
 
 ## Exit Program
    The user enters "exit" to close the program.
 
-(Project takes a second to run the first time after installing dependencies)
+(Project takes a second to run the first time after 
+installing dependencies)

@@ -5,6 +5,10 @@ from collections import defaultdict
 
 
 class CustomHumidityPredictor(BaseEstimator, RegressorMixin):
+    """
+    A custom linear regression model to predict humidity
+    based on climate features using gradient descent.
+    """
     def __init__(self, learning_rate=1e-4, n_iterations=10000):
         self.learning_rate = learning_rate
         self.n_iterations = n_iterations
@@ -12,6 +16,10 @@ class CustomHumidityPredictor(BaseEstimator, RegressorMixin):
         self.bias_term = None
 
     def fit(self, input_data, actual_humidity):
+        """
+        Trains the model using gradient descent on the input features
+        to predict humidity.
+        """
         # input_data is a 2D array: each row is a day, each column is a feature
         num_rows, num_features = input_data.shape
 
@@ -41,11 +49,18 @@ class CustomHumidityPredictor(BaseEstimator, RegressorMixin):
         return self
 
     def predict(self, input_data):
+        """
+        Predicts humidity using the trained model.
+        """
         # uses the trained model weights to make a semi accurate prediction
         return np.dot(input_data, self.feature_weights) + self.bias_term
 
 
 class CustomTemperaturePredictor(BaseEstimator, RegressorMixin):
+    """
+    A custom linear regression model to predict temperature
+    from climate features using gradient descent.
+    """
     def __init__(self, learning_rate=1e-5, n_iterations=10000):
         self.learning_rate = learning_rate
         self.n_iterations = n_iterations
@@ -53,6 +68,10 @@ class CustomTemperaturePredictor(BaseEstimator, RegressorMixin):
         self.bias_term = None
 
     def fit(self, input_data, actual_temperature):
+        """
+        Trains the model on input features to predict temperature,
+        with stability checks and gradient clipping.
+        """
         num_rows, num_features = input_data.shape
         self.feature_weights = np.random.randn(num_features) * 0.01
         self.bias_term = 0
@@ -83,11 +102,16 @@ class CustomTemperaturePredictor(BaseEstimator, RegressorMixin):
         return self
 
     def predict(self, input_data):
+        """
+        Predicts temperature using the trained model.
+        """
         return np.dot(input_data, self.feature_weights) + self.bias_term
 
 
 def Clustering(data_points, num_clusters=3, max_iterations=100):
-    # picks random starting points for the clusters
+    """
+    Groups data points into clusters using a basic k-means algorithm.
+    """
     starting_indices = np.random.choice(len(data_points), num_clusters,
                                         replace=False)
     cluster_centers = data_points[starting_indices]
@@ -122,6 +146,10 @@ def Clustering(data_points, num_clusters=3, max_iterations=100):
 
 
 def Anomaly(df, temp_column="temp", temp_diff_threshold=15):
+    """
+    Detects daily temperature anomalies based on deviation from the
+    average temperature of that month.
+    """
     # creates DATE and finds all with each MONTH_NUM
     df["DATE"] = pd.to_datetime(df[["YEAR", "MONTH", "DAY"]])
     df["MONTH_NUM"] = df["DATE"].dt.month

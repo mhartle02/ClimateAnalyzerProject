@@ -8,6 +8,9 @@ from time import *
 
 
 def cleanData():
+    """
+    Loads and cleans the Tallahassee dataset using DataProcessor.
+    """
     file_path = "data/tallahassee_data.json"
 
     # loads in the data from data_processor.py file
@@ -23,6 +26,9 @@ def cleanData():
 
 
 def seeCleanedData():
+    """
+    Displays column names and a sample of cleaned data.
+    """
     cleaned_data = cleanData()
     if cleaned_data is not None:
         print("Data cleaned successfully")
@@ -33,6 +39,10 @@ def seeCleanedData():
 
 
 def predict_humidity():
+    """
+    Trains a humidity prediction model and allows
+    user input to test predictions.
+    """
     cleaned_data = cleanData()
     # X = columns we want to look at to see how it effects Y
     X = cleaned_data[["temp", "dew", "precip", "windspeed"]].values
@@ -91,6 +101,9 @@ def predict_humidity():
 
 
 def predict_temperature():
+    """
+    Predicts average temperature for each month using a trained model.
+    """
     data = cleanData()
 
     # Group by month and year to average
@@ -121,6 +134,10 @@ def predict_temperature():
 
 
 def cluster_temperatures():
+    """
+    Clusters monthly average temperatures from multiple cities
+    and visualizes them.
+    """
     city_files = {
         "Tallahassee": "data/tallahassee_data.json",
         "New York City": "data/nyc_data.json",
@@ -179,6 +196,9 @@ def cluster_temperatures():
 
 
 def detect_daily_anomalies():
+    """
+    Detects and visualizes temperature anomalies in Tallahassee's daily data.
+    """
     cleaned_data = cleanData()
     if cleaned_data is None:
         print("No data found.")
@@ -203,6 +223,9 @@ def detect_daily_anomalies():
 
 
 def humidity_graph():
+    """
+    Trains a model and plots predicted vs actual humidity for a chosen month.
+    """
     cleaned_data = cleanData()
     X = cleaned_data[["temp", "dew", "precip", "windspeed"]].values
     y = cleaned_data["humidity"].values
@@ -251,6 +274,9 @@ def humidity_graph():
 
 
 def show_menu():
+    """
+    Prints the command-line menu for user interaction.
+    """
     print("\nClimate Analyzer\n"
           "----------------\n"
           "0) Show cleaned Tallahassee data\n"
